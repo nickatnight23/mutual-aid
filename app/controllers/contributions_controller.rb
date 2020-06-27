@@ -5,7 +5,8 @@ class ContributionsController < ApplicationController
   layout "without_navbar", only: [:thank_you]
 
   def index
-    @filter_types = FilterTypeBlueprint.render([ContributionType, Category, ServiceArea, UrgencyLevel, ContactMethod])
+    @filter_types = [ContributionTypeFilter, CategoryFilter, ServiceAreaFilter, ContactMethodFilter].map(&:options).to_json
+    # The BrowserFilter takes the result of the parameters from the FilterType checkboxes and returns a list of contributions
     filter = BrowseFilter.new(filter_params, self)
     @contributions = ContributionBlueprint.render(filter.contributions, **filter.options)
     respond_to do |format|

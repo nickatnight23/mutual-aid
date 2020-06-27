@@ -29,7 +29,6 @@ class ServiceArea < ApplicationRecord
     order(MobilityStringTranslation.arel_table["value"].lower.asc)
   }
 
-  scope :as_filter_types, -> { i18n.select :id, :name }
   scope :publicly_visible, -> { where(display_to_public: true) }
 
   def full_name
