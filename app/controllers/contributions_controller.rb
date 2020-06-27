@@ -5,9 +5,9 @@ class ContributionsController < ApplicationController
   layout "without_navbar", only: [:thank_you]
 
   def index
-    @filter_types = [ContributionTypeFilter, CategoryFilter, ServiceAreaFilter, ContactMethodFilter].map(&:options).to_json
+    @filter_types = BrowseFilter.filter_options_json
     # The BrowserFilter takes the result of the parameters from the FilterType checkboxes and returns a list of contributions
-    filter = BrowseFilter.new(filter_params, self)
+    filter = BrowseFilter.new(params, self)
     @contributions = ContributionBlueprint.render(filter.contributions, **filter.options)
     respond_to do |format|
       format.html
@@ -46,17 +46,17 @@ class ContributionsController < ApplicationController
   end
 
   private
+  #
+  # def filter_params
+  #   return Hash.new unless allowed_params && allowed_params.to_h.any?
+  #   allowed_params.to_h.filter { |key, _v| BrowseFilter::ALLOWED_PARAMS.keys.include? key}.tap do |hash|
+  #     hash.keys.each { |key| hash[key] = hash[key].keys}
+  #   end
+  # end
 
-  def filter_params
-    return Hash.new unless allowed_params && allowed_params.to_h.any?
-    allowed_params.to_h.filter { |key, _v| BrowseFilter::ALLOWED_PARAMS.keys.include? key}.tap do |hash|
-      hash.keys.each { |key| hash[key] = hash[key].keys}
-    end
-  end
-
-  def allowed_params
-    @allowed_params ||= params.permit(:format, **BrowseFilter::ALLOWED_PARAMS)
-  end
+  # def allowed_params
+  #   @allowed_params ||= params.permit(:format, **BrowseFilter::ALLOWED_PARAMS)
+  # end
 
   def set_contribution
     type = params["contribution_type"]&.classify || "Ask"
